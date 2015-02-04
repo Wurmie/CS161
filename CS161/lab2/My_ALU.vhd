@@ -47,7 +47,7 @@ begin
     begin
         case opcode is
             when "1000" => --unsigned add
-            
+            --need while loop to add every 4 bits together
             result <= total(NUMBITS-1 downto 0);
             overflow <= total(NUMBITS);
             carry <= total(NUMBITS);

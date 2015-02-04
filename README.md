@@ -1,1 +1,1 @@
-# CS161
+# UCR CS classes

@@ -1,0 +1,205 @@
+/*
+
+ * llope039_lab3_part3.c
+
+ *
+
+ * Created: 1/26/2015 7:06:04 PM
+
+ *  Author: Luiz
+
+ */ 
+
+#define F_CPU 1000000UL
+
+#include <avr/io.h>
+
+#include <util/delay.h>
+
+
+
+enum states {inti, wait, prs, pr, nxt, unlock, lock} states;
+
+void door_lock()
+
+{
+
+	switch(states)
+
+	{
+
+		case inti:
+
+		PORTB = 0x00;
+
+		states = wait;
+
+		break;
+
+	
+
+		case wait:
+
+		
+
+		if(!(~PINA & 0x02) && !(~PINA & 0x04))
+
+		{
+
+			states = wait;
+
+			//_delay_ms(250);
+
+		}
+
+		if(~PINA & 0x04)
+
+		{
+
+			states = prs;
+
+		}
+
+		if(~PINA & 0x08)
+
+		{
+
+			states = lock;
+
+		}
+
+		break;
+
+	
+
+		case prs:
+
+		if ((~PINA & 0x04)) {
+
+			states = prs;
+
+			_delay_ms(250);
+
+		}
+
+		if (!(~PINA & 0x04)) {
+
+			states = pr;
+
+		}
+
+		break;
+
+		
+
+		case pr:
+
+		if ((~PINA & 0x02)) {
+
+			states = nxt;
+
+		}
+
+		else if((~PINA & 0x04))
+
+		{
+
+			states = wait;
+
+		}
+
+		else if((~PINA & 0x01))
+
+		{
+
+			states = wait;
+
+		}
+
+		else
+
+		{
+
+			states = pr;
+
+		}
+
+		break;
+
+	
+
+		case nxt:
+
+		if((~PINA & 0x02))
+
+		{
+
+			states = nxt;
+
+		}
+
+		else if(!(~PINA & 0x02))
+
+		{
+
+			states = unlock;
+
+		}
+
+		break;
+
+	
+
+		case unlock:
+
+		PORTB = 0x01;
+
+		states = wait;
+
+		break;
+
+		
+
+		case lock:
+
+		PORTB = 0x00;
+
+		states = wait;
+
+		break;
+
+	}
+
+	
+
+}
+
+
+
+int main(void)
+
+{
+
+	DDRB = 0xFF;
+
+	PORTB = 0x00;
+
+	DDRA = 0x00;
+
+	PORTA = 0xFF;
+
+	
+
+	states = inti;
+
+	
+
+    while(1)
+
+    {
+
+        door_lock();
+
+	}
+
+}

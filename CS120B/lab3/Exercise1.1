@@ -1,0 +1,169 @@
+/*
+
+ * llope039_lab3_part1.c
+
+ *
+
+ * Created: 1/26/2015 5:47:56 PM
+
+ *  Author: Luiz
+
+ */ 
+
+
+
+#define F_CPU 1000000UL
+
+#include <avr/io.h>
+
+#include <util/delay.h>
+
+
+
+enum LA_States { LA_SMStart, LA_prs, LA_prsoff, LA_on, LA_prs2, LA_prsoff2 } LA_State;
+
+
+
+void led_switch()
+
+{
+
+	switch(LA_State) { // Transitions
+
+		case LA_SMStart: 
+
+		PORTB = 0x01;  // Initial transition
+
+		LA_State = LA_prs;
+
+		break;
+
+		
+
+		case LA_prs:
+
+		if (!(~PINA & 0x01)) {
+
+			LA_State = LA_prs;
+
+			_delay_ms(250);
+
+		}
+
+		else if (~PINA & 0x01) {
+
+			LA_State = LA_prsoff;
+
+		}
+
+		break;
+
+		
+
+		case LA_prsoff:
+
+		if ((~PINA & 0x01)) {
+
+			LA_State = LA_prsoff;
+
+			_delay_ms(250);
+
+		}
+
+		else if (!(~PINA & 0x01)) {
+
+			LA_State = LA_on;
+
+		}
+
+		break;
+
+		
+
+		case LA_on:
+
+		PORTB = 0x02;
+
+		LA_State = LA_prs2;
+
+		break;
+
+		
+
+		case LA_prs2:
+
+		if (!(~PINA & 0x01)) {
+
+			LA_State = LA_prs2;
+
+			_delay_ms(250);
+
+		}
+
+		else if (~PINA & 0x01) {
+
+			LA_State = LA_prsoff2;
+
+		}
+
+		break;
+
+		
+
+		case LA_prsoff2:
+
+		if ((~PINA & 0x01)) {
+
+			LA_State = LA_prsoff2;
+
+			_delay_ms(250);
+
+		}
+
+		else if (!(~PINA & 0x01)) {
+
+			LA_State = LA_SMStart;
+
+		}
+
+		break;
+
+		
+
+		default:
+
+		LA_State = LA_SMStart;
+
+		break;
+
+	} // Transitions
+
+}
+
+
+
+int main(void)
+
+{
+
+   DDRB = 0xFF;
+
+   PORTB = 0x00;
+
+   DDRA = 0x00;
+
+   PORTA = 0xFF;
+
+   
+
+   LA_State = LA_SMStart; // Indicates initial call
+
+   while(1) 
+
+   {
+
+	   led_switch();
+
+   }
+
+}

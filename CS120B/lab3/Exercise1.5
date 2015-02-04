@@ -1,0 +1,229 @@
+/*
+
+ * llope039_lab3_part5.c
+
+ *
+
+ * Created: 1/27/2015 12:50:28 PM
+
+ *  Author: Luiz
+
+ */ 
+
+
+
+/*
+
+ * llope039_lab3_part4.c
+
+ *
+
+ * Created: 1/27/2015 12:41:53 PM
+
+ *  Author: Luiz
+
+ */ 
+
+
+
+#define F_CPU 1000000UL
+
+#include <avr/io.h>
+
+#include <util/delay.h>
+
+
+
+unsigned char count = 0x00;
+
+
+
+enum states {inti, wait, pr, pr2, lock, unlock} states;
+
+void door_lock()
+
+{
+
+	unsigned char sq[] = {0x04, 0x01, 0x02, 0x01};
+
+
+
+	switch(states)
+
+	{
+
+		case inti:
+
+		PORTB = 0x00;
+
+		states = wait;
+
+		break;
+
+		
+
+		case wait:
+
+		if(count == 4)
+
+		{
+
+			if(PORTB & 0x01)
+
+			{
+
+				states = lock;
+
+			}
+
+			else 
+
+			{
+
+				states = unlock;
+
+			}
+
+		}
+
+		else if(~PINA & sq[count])
+
+		{
+
+			states = pr;
+
+			_delay_ms(150);
+
+		}
+
+		else if(~PINA & 0x08)
+
+		{
+
+			states = pr2;
+
+			_delay_ms(150);
+
+		}
+
+		else if(~PINA > 0)
+
+		{
+
+			count = 0;
+
+			states = wait;
+
+		}
+
+		break;
+
+		
+
+		case pr:
+
+		if(~PINA & sq[count])
+
+		{
+
+			states = pr;
+
+			_delay_ms(150);
+
+		}
+
+		else
+
+		{
+
+			count = count + 1;
+
+			states = wait;
+
+		}
+
+		break;
+
+		
+
+		case pr2:
+
+		if ((~PINA & 0x08)) {
+
+			states = pr2;
+
+			_delay_ms(150);
+
+		}
+
+		if (!(~PINA & 0x08)) {
+
+			states = lock;
+
+		}
+
+		break;
+
+		
+
+		case unlock:
+
+		PORTB = 0x01;
+
+		count = 0;
+
+		states = wait;
+
+		break;
+
+	
+
+		case lock:
+
+		PORTB = 0x00;
+
+		count = 0;
+
+		states = wait;
+
+		break;
+
+		
+
+		
+
+	}
+
+	
+
+}
+
+
+
+int main(void)
+
+{
+
+	DDRB = 0xFF;
+
+	PORTB = 0x00;
+
+	DDRA = 0x00;
+
+	PORTA = 0xFF;
+
+	
+
+	states = inti;
+
+	
+
+    while(1)
+
+    {
+
+        door_lock();
+
+	}
+
+}

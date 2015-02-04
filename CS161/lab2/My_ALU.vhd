@@ -29,8 +29,8 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity BCD_arithmetic is
-    generic(NUMBITS: natural :=8);
+entity my_alu is
+    generic(NUMBITS: natural :=32); --number of total bits
     Port ( A : in  STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
            B : in  STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
            opcode : in  STD_LOGIC_VECTOR (2 downto 0);
@@ -38,16 +38,16 @@ entity BCD_arithmetic is
            carry : out  STD_LOGIC;
            overflow : out  STD_LOGIC;
            zero : out  STD_LOGIC);
-end BCD_arithmetic;
+end my_alu;
 
-architecture Behavioral of BCD_arithmetic is
+architecture Behavioral of my_alu is
 signal total: std_logic_vector(NUMBITS downto 0);
 begin
     process(A,B,opcode,total)
     begin
         case opcode is
-            when "1000" =>
-            total <= std_logic_vector(unsigned('0' &A) + unsigned('0' &B));
+            when "1000" => --unsigned add
+            
             result <= total(NUMBITS-1 downto 0);
             overflow <= total(NUMBITS);
             carry <= total(NUMBITS);

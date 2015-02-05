@@ -142,11 +142,11 @@ BEGIN
             assert zero = '0'                                        report "Test_4: zero incorrect"        severity Warning;
 
          -- Test 4
-            A <= conv_std_logic_vector(8, 32);
-            B <= conv_std_logic_vector(2, 32);
+            A <= conv_std_logic_vector(35, 32);
+            B <= conv_std_logic_vector(80, 32);
          
             wait for 10 ns;
-            assert result = conv_std_logic_vector(6, 36)     report "Test_4: result incorrect"     severity Warning;
+            assert result = conv_std_logic_vector(277, 36)     report "Test_4: result incorrect"     severity Warning;
             assert carry = '0'                                 report "Test_4: carryout incorrect"    severity Warning;
             assert overflow = '0'                                 report "Test_4: overflow incorrect"    severity Warning;
             assert zero = '0'                                        report "Test_4: zero incorrect"        severity Warning;

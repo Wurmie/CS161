@@ -17,17 +17,11 @@
 -- Additional Comments:
 --
 ----------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use ieee.std_logic_unsigned.all ;
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
-use ieee.std_logic_arith.all;
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+LIBRARY ieee;
+USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_unsigned.all;
+USE ieee.numeric_std.ALL;
+--USE ieee.std_logic_arith.all;
 
 entity my_alu is
     generic(NUMBITS: natural := 32); --number of total bits
@@ -60,16 +54,17 @@ begin
     begin
     case opcode is
         when "1000" => --unsigned add
-            total <= conv_std_logic_vector(unsigned('0' & A) + unsigned('0' & B));
-            num0 <= conv_std_logic_vector(to_integer(unsigned(total))/1 mod 10);
-            num1 <= conv_std_logic_vector(to_integer(unsigned(total))/10 mod 10);
-            num2 <= conv_std_logic_vector(to_integer(unsigned(total))/100 mod 10);
-            num3 <= conv_std_logic_vector(to_integer(unsigned(total))/1000 mod 10);
-            num4 <= conv_std_logic_vector(to_integer(unsigned(total))/10000 mod 10);
-            num5 <= conv_std_logic_vector(to_integer(unsigned(total))/100000 mod 10);
-            num6 <= conv_std_logic_vector(to_integer(unsigned(total))/1000000 mod 10);
-            num7 <= conv_std_logic_vector(to_integer(unsigned(total))/10000000 mod 10);
-            result <= std_logic_vector("0000" & num7 & num6 & num5 & num4 & num3 & num2 & num1 & num0);
+            total <= conv_std_logic_vector(unsigned('0' & A) + unsigned('0' & B),33);
+				num1 <= "1001";
+            num0 <= conv_std_logic_vector(to_integer(num1(3 downto 0)),4);
+            num1 <= conv_std_logic_vector(to_integer(unsigned(total))/10 mod 10,4);
+            num2 <= conv_std_logic_vector(to_integer(unsigned(total))/100 mod 10,4);
+            num3 <= conv_std_logic_vector(to_integer(unsigned(total))/1000 mod 10,4);
+            num4 <= conv_std_logic_vector(to_integer(unsigned(total))/10000 mod 10,4);
+            num5 <= conv_std_logic_vector(to_integer(unsigned(total))/100000 mod 10,4);
+            num6 <= conv_std_logic_vector(to_integer(unsigned(total))/1000000 mod 10,4);
+            num7 <= conv_std_logic_vector(to_integer(unsigned(total))/10000000 mod 10,4);
+            result <= conv_std_logic_vector("0000" & num7 & num6 & num5 & num4 & num3 & num2 & num1 & num0);
             outTotal <= "000" & total;
 				overflow <= total(NUMBITS);
 				carry <= total(NUMBITS);

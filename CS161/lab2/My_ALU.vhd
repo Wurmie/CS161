@@ -34,7 +34,7 @@ entity my_alu is
             B : in STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
             opcode : in STD_LOGIC_VECTOR (3 downto 0);
             result : out STD_LOGIC_VECTOR (NUMBITS+3 downto 0);
-            outTotal : out STD_LOGIC_VECTOR (3 downto 0);
+            outTotal : out STD_LOGIC_VECTOR (NUMBITS+3 downto 0);
             carry : out STD_LOGIC;
             overflow : out STD_LOGIC;
             zero : out STD_LOGIC);
@@ -61,7 +61,7 @@ begin
         when "1000" => --unsigned add
             total <= std_logic_vector(unsigned('0' & A) + unsigned('0' & B));
             num0 <= std_logic_vector(unsigned(total) mod 10);
-            num1 <= std_logic_vector(unsigned(total)/10);
+            num1 <= std_logic_vector(unsigned(total)/10 mod 10);
             num2 <= std_logic_vector(unsigned(total)/100 mod 10);
             num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
             num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
@@ -69,11 +69,83 @@ begin
             num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
             num7 <= std_logic_vector(unsigned(total)/10000000 mod 10);
             result <= std_logic_vector("0000" & num7 & num6 & num5 & num4 & num3 & num2 & num1 & num0);
-            outTotal <= num1(3 downto 0);
+            outTotal <= "000" & total;
+				overflow <= total(NUMBITS);
+				carry <= total(NUMBITS);
+				if (unsigned(total(NUMBITS-1 downto 0)) = 0) then
+					zero <= '1';
+				else
+					zero <= '0';
+				end if;
+			when "1001" => --unsigned sub
+            total <= std_logic_vector(unsigned('0' & A) - unsigned('0' & B));
+            num0 <= std_logic_vector(unsigned(total) mod 10);
+            num1 <= std_logic_vector(unsigned(total)/10 mod 10);
+            num2 <= std_logic_vector(unsigned(total)/100 mod 10);
+            num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
+            num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
+            num5 <= std_logic_vector(unsigned(total)/100000 mod 10);
+            num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
+            num7 <= std_logic_vector(unsigned(total)/10000000 mod 10);
+            result <= std_logic_vector("0000" & num7 & num6 & num5 & num4 & num3 & num2 & num1 & num0);
+            outTotal <= "000" & total;
+				overflow <= total(NUMBITS);
+				carry <= total(NUMBITS);
+				if (unsigned(total(NUMBITS-1 downto 0)) = 0) then
+					zero <= '1';
+				else
+					zero <= '0';
+				end if;
+			when "1100" => --signed add
+            total <= std_logic_vector(signed('0' & A) + signed('0' & B));
+				if (signed(total) >= 0) then
+					num7 <= "0001";
+					total <= not(total) + 1;
+				else
+					num7 <= "0000";
+				end if;
+            num0 <= std_logic_vector(unsigned(total) mod 10);
+            num1 <= std_logic_vector(unsigned(total)/10 mod 10);
+            num2 <= std_logic_vector(unsigned(total)/100 mod 10);
+            num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
+            num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
+            num5 <= std_logic_vector(unsigned(total)/100000 mod 10);
+            num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
+            result <= std_logic_vector(num7 & "0000" & num6 & num5 & num4 & num3 & num2 & num1 & num0);
+            outTotal <= "000" & total;
+				overflow <= total(NUMBITS);
+				carry <= total(NUMBITS);
+				if (unsigned(total(NUMBITS-1 downto 0)) = 0) then
+					zero <= '1';
+				else
+					zero <= '0';
+				end if;
+			when "1101" => --signed sub
+            total <= std_logic_vector(signed('0' & A) - signed('0' & B));
+				if (signed(total) >= 0) then
+					num7 <= "0001";
+					total <= not(total) + 1;
+				else
+					num7 <= "0000";
+				end if;
+            num0 <= std_logic_vector(unsigned(total) mod 10);
+            num1 <= std_logic_vector(unsigned(total)/10 mod 10);
+            num2 <= std_logic_vector(unsigned(total)/100 mod 10);
+            num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
+            num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
+            num5 <= std_logic_vector(unsigned(total)/100000 mod 10);
+            num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
+            result <= std_logic_vector(num7 & "0000" & num6 & num5 & num4 & num3 & num2 & num1 & num0);
+            outTotal <= "000" & total;
+				overflow <= total(NUMBITS);
+				carry <= total(NUMBITS);
+				if (unsigned(total(NUMBITS-1 downto 0)) = 0) then
+					zero <= '1';
+				else
+					zero <= '0';
+				end if;
         when others =>
---need while loop to add every 4 bits together
     end case;
     end process;
 
 end Behavioral;
-

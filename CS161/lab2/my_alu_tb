@@ -117,8 +117,8 @@ BEGIN
             assert carry = '0'                                 report "Test_2: carryout incorrect"    severity Warning;
             assert overflow = '0'                                 report "Test_2: overflow incorrect"    severity Warning;
             assert zero = '0'                                        report "Test_2: zero incorrect"        severity Warning;
-         
-				       report "Testing Unsigned Add";
+    
+    	report "Testing Unsigned Sub";
         opcode <= "1001";
      
             -- Test 3
@@ -150,7 +150,79 @@ BEGIN
             assert carry = '0'                                 report "Test_4: carryout incorrect"    severity Warning;
             assert overflow = '0'                                 report "Test_4: overflow incorrect"    severity Warning;
             assert zero = '0'                                        report "Test_4: zero incorrect"        severity Warning;
-               
+            
+            report "Testing signed Add";
+            opcode <= "1010";
+     
+            -- Test 5
+            A <= conv_std_logic_vector(-2, 32);
+            B <= conv_std_logic_vector(2, 32);
+         
+            wait for 10 ns;
+            assert result = conv_std_logic_vector(0, 36)     report "Test_5: result incorrect"     severity Warning;
+            assert carry = '0'                                 report "Test_5: carryout incorrect"    severity Warning;
+            assert overflow = '0'                                 report "Test_5: overflow incorrect"    severity Warning;
+            assert zero = '1'                                        report "Test_5: zero incorrect"        severity Warning;
+	    
+	    -- Test 6
+            A <= conv_std_logic_vector(-20, 32);
+            B <= conv_std_logic_vector(2, 32);
+         
+            wait for 10 ns;
+            assert result = conv_std_logic_vector(24, 36)     report "Test_5: result incorrect"     severity Warning;
+            assert carry = '0'                                 report "Test_5: carryout incorrect"    severity Warning;
+            assert overflow = '0'                                 report "Test_5: overflow incorrect"    severity Warning;
+            assert zero = '0'                                        report "Test_5: zero incorrect"        severity Warning; 
+	    
+	     -- Test 7
+            A <= conv_std_logic_vector(-2, 32);
+            B <= conv_std_logic_vector(-2, 32);
+         
+            wait for 10 ns;
+            assert result = conv_std_logic_vector(-4, 36)     report "Test_7: result incorrect"     severity Warning;
+            assert carry = '0'                                 report "Test_7: carryout incorrect"    severity Warning;
+            assert overflow = '0'                                 report "Test_7: overflow incorrect"    severity Warning;
+            assert zero = '0'                                        report "Test_7: zero incorrect"        severity Warning;    
+            
+            report "Testing signed Sub";
+            opcode <= "1011";
+     
+            -- Test 8
+            A <= conv_std_logic_vector(-2, 32);
+            B <= conv_std_logic_vector(2, 32);
+         
+            wait for 10 ns;
+            assert result = conv_std_logic_vector(0, 36)     report "Test_8: result incorrect"     severity Warning;
+            assert carry = '0'                                 report "Test_8: carryout incorrect"    severity Warning;
+            assert overflow = '0'                                 report "Test_8: overflow incorrect"    severity Warning;
+            assert zero = '1'                                        report "Test_8: zero incorrect"        severity Warning;
+	    
+	    report "Testing signed Add";
+            opcode <= "1010";
+     
+            -- Test 9
+            A <= conv_std_logic_vector(-2, 32);
+            B <= conv_std_logic_vector(10, 32);
+         
+            wait for 10 ns;
+            assert result = conv_std_logic_vector(-12, 36)     report "Test_9: result incorrect"     severity Warning;
+            assert carry = '0'                                 report "Test_9: carryout incorrect"    severity Warning;
+            assert overflow = '0'                                 report "Test_9: overflow incorrect"    severity Warning;
+            assert zero = '1'                                        report "Test_9: zero incorrect"        severity Warning;
+	    
+	    report "Testing signed Add";
+            opcode <= "1010";
+     
+            -- Test 10
+            A <= conv_std_logic_vector(2, 32);
+            B <= conv_std_logic_vector(10, 32);
+         
+            wait for 10 ns;
+            assert result = conv_std_logic_vector(-8, 36)     report "Test_10: result incorrect"     severity Warning;
+            assert carry = '0'                                 report "Test_10: carryout incorrect"    severity Warning;
+            assert overflow = '0'                                 report "Test_10: overflow incorrect"    severity Warning;
+            assert zero = '0'                                        report "Test_10: zero incorrect"        severity Warning;
+	    
         wait;
    end process;
 

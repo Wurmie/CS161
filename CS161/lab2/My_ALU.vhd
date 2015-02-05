@@ -80,14 +80,14 @@ begin
 				end if;
 			when "1001" => --unsigned sub
             total <= std_logic_vector(unsigned('0' & A) - unsigned('0' & B));
-            num0 <= std_logic_vector(unsigned(total) mod 10);
-            num1 <= std_logic_vector(unsigned(total)/10 mod 10);
-            num2 <= std_logic_vector(unsigned(total)/100 mod 10);
-            num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
-            num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
-            num5 <= std_logic_vector(unsigned(total)/100000 mod 10);
-            num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
-            num7 <= std_logic_vector(unsigned(total)/10000000 mod 10);
+            num0 <= conv_std_logic_vector(to_integer(unsigned(total))/1 mod 10);
+            num1 <= conv_std_logic_vector(to_integer(unsigned(total))/10 mod 10);
+            num2 <= conv_std_logic_vector(to_integer(unsigned(total))/100 mod 10);
+            num3 <= conv_std_logic_vector(to_integer(unsigned(total))/1000 mod 10);
+            num4 <= conv_std_logic_vector(to_integer(unsigned(total))/10000 mod 10);
+            num5 <= conv_std_logic_vector(to_integer(unsigned(total))/100000 mod 10);
+            num6 <= conv_std_logic_vector(to_integer(unsigned(total))/1000000 mod 10);
+            num7 <= conv_std_logic_vector(to_integer(unsigned(total))/10000000 mod 10);
             result <= std_logic_vector("0000" & num7 & num6 & num5 & num4 & num3 & num2 & num1 & num0);
             outTotal <= "000" & total;
 				overflow <= total(NUMBITS);
@@ -105,13 +105,14 @@ begin
 				else
 					num7 <= "0000";
 				end if;
-            num0 <= std_logic_vector(unsigned(total) mod 10);
-            num1 <= std_logic_vector(unsigned(total)/10 mod 10);
-            num2 <= std_logic_vector(unsigned(total)/100 mod 10);
-            num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
-            num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
-            num5 <= std_logic_vector(unsigned(total)/100000 mod 10);
-            num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
+            num0 <= conv_std_logic_vector(to_integer(unsigned(total))/1 mod 10);
+            num1 <= conv_std_logic_vector(to_integer(unsigned(total))/10 mod 10);
+            num2 <= conv_std_logic_vector(to_integer(unsigned(total))/100 mod 10);
+            num3 <= conv_std_logic_vector(to_integer(unsigned(total))/1000 mod 10);
+            num4 <= conv_std_logic_vector(to_integer(unsigned(total))/10000 mod 10);
+            num5 <= conv_std_logic_vector(to_integer(unsigned(total))/100000 mod 10);
+            num6 <= conv_std_logic_vector(to_integer(unsigned(total))/1000000 mod 10);
+    
             result <= std_logic_vector(num7 & "0000" & num6 & num5 & num4 & num3 & num2 & num1 & num0);
             outTotal <= "000" & total;
 				overflow <= total(NUMBITS);
@@ -129,13 +130,14 @@ begin
 				else
 					num7 <= "0000";
 				end if;
-            num0 <= std_logic_vector(unsigned(total) mod 10);
-            num1 <= std_logic_vector(unsigned(total)/10 mod 10);
-            num2 <= std_logic_vector(unsigned(total)/100 mod 10);
-            num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
-            num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
-            num5 <= std_logic_vector(unsigned(total)/100000 mod 10);
-            num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
+            num0 <= conv_std_logic_vector(to_integer(unsigned(total))/1 mod 10);
+            num1 <= conv_std_logic_vector(to_integer(unsigned(total))/10 mod 10);
+            num2 <= conv_std_logic_vector(to_integer(unsigned(total))/100 mod 10);
+            num3 <= conv_std_logic_vector(to_integer(unsigned(total))/1000 mod 10);
+            num4 <= conv_std_logic_vector(to_integer(unsigned(total))/10000 mod 10);
+            num5 <= conv_std_logic_vector(to_integer(unsigned(total))/100000 mod 10);
+            num6 <= conv_std_logic_vector(to_integer(unsigned(total))/1000000 mod 10);
+            
             result <= std_logic_vector(num7 & "0000" & num6 & num5 & num4 & num3 & num2 & num1 & num0);
             outTotal <= "000" & total;
 				overflow <= total(NUMBITS);

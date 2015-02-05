@@ -1,20 +1,20 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Company:
+-- Engineer:
 -- 
--- Create Date:    13:59:01 02/04/2015 
--- Design Name: 
--- Module Name:    my_alu - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
+-- Create Date:    13:59:01 02/04/2015
+-- Design Name:
+-- Module Name:    my_alu - Behavioral
+-- Project Name:
+-- Target Devices:
+-- Tool versions:
+-- Description:
 --
--- Dependencies: 
+-- Dependencies:
 --
--- Revision: 
+-- Revision:
 -- Revision 0.01 - File Created
--- Additional Comments: 
+-- Additional Comments:
 --
 ----------------------------------------------------------------------------------
 library IEEE;
@@ -29,161 +29,51 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity my_alu is
-	generic(NUMBITS: natural :=12); --number of total bits
-	Port ( A : in STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
-			B : in STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
-			opcode : in STD_LOGIC_VECTOR (3 downto 0);
-			result : out STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
-			carry : out STD_LOGIC;
-			overflow : out STD_LOGIC;
-			zero : out STD_LOGIC);
+    generic(NUMBITS: natural := 32); --number of total bits
+    Port ( A : in STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
+            B : in STD_LOGIC_VECTOR (NUMBITS-1 downto 0);
+            opcode : in STD_LOGIC_VECTOR (3 downto 0);
+            result : out STD_LOGIC_VECTOR (NUMBITS+3 downto 0);
+            outTotal : out STD_LOGIC_VECTOR (3 downto 0);
+            carry : out STD_LOGIC;
+            overflow : out STD_LOGIC;
+            zero : out STD_LOGIC);
 end my_alu;
 
 architecture Behavioral of my_alu is
 signal total: std_logic_vector(NUMBITS downto 0);
+signal sign: std_logic_vector(3 downto 0);
+signal num0: std_logic_vector(3 downto 0);
+signal num1: std_logic_vector(3 downto 0);
+signal num2: std_logic_vector(3 downto 0);
+signal num3: std_logic_vector(3 downto 0);
+signal num4: std_logic_vector(3 downto 0);
+signal num5: std_logic_vector(3 downto 0);
+signal num6: std_logic_vector(3 downto 0);
+signal num7: std_logic_vector(3 downto 0);
+
+
 begin
 
-	process(A,B,opcode,total)
-	begin
-	case opcode is
-		when "1000" => --unsigned add
-			total <= std_logic_vector(unsigned('0' &A) + unsigned('0' &B));
-			--result <= total(NUMBITS-1 downto 0);
---			for i in 0 to 7 loop --number of shifts
---				for j in 3 to NUMBITS-1 loop --Checking each column
---					if total(j downto j-3) > "0100" then
---						total(j downto j-3) <= total(j downto j-3) + "0011";
---					end if;
---				end loop;
---			end loop;
-			result <= total;
-		when others =>
+    process(A,B,opcode,total)
+    begin
+    case opcode is
+        when "1000" => --unsigned add
+            total <= std_logic_vector(unsigned('0' & A) + unsigned('0' & B));
+            num0 <= std_logic_vector(unsigned(total) mod 10);
+            num1 <= std_logic_vector(unsigned(total)/10);
+            num2 <= std_logic_vector(unsigned(total)/100 mod 10);
+            num3 <= std_logic_vector(unsigned(total)/1000 mod 10);
+            num4 <= std_logic_vector(unsigned(total)/10000 mod 10);
+            num5 <= std_logic_vector(unsigned(total)/100000 mod 10);
+            num6 <= std_logic_vector(unsigned(total)/1000000 mod 10);
+            num7 <= std_logic_vector(unsigned(total)/10000000 mod 10);
+            result <= std_logic_vector("0000" & num7 & num6 & num5 & num4 & num3 & num2 & num1 & num0);
+            outTotal <= num1(3 downto 0);
+        when others =>
 --need while loop to add every 4 bits together
-	end case;
-	end process;
+    end case;
+    end process;
 
 end Behavioral;
 
---------------------------------------------------------------------------------
--- Company:
--- Engineer:
---
--- Create Date:   21:10:35 01/14/2015
--- Design Name: 
--- Module Name:   /home/csmajs/vnguy057/Desktop/Lab1_REDO/MY_ALU_8_BIT_TB.vhd
--- Project Name:  Lab1_REDO
--- Target Device:
--- Tool versions:
--- Description: 
--- 
--- VHDL Test Bench Created by ISE for module: MY_ALU
--- 
--- Dependencies:
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
---
--- Notes:
--- This testbench has been automatically generated using types std_logic and
--- std_logic_vector for the ports of the unit under test.  Xilinx recommends
--- that these types always be used for the top-level I/O of a design in order
--- to guarantee that the testbench will bind correctly to the post-implementation
--- simulation model.
---------------------------------------------------------------------------------
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.std_logic_unsigned.all;
-USE ieee.numeric_std.ALL;
-USE ieee.std_logic_arith.all;
- 
-ENTITY my_alu_8bit_tb IS
-END my_alu_8bit_tb;
- 
-ARCHITECTURE behavior OF my_alu_8bit_tb IS
- 
-    COMPONENT my_alu
-     generic(
-        NUMBITS    : natural    := 8
-     );
-    PORT(
-         A : IN  std_logic_vector;
-         B : IN  std_logic_vector;
-         opcode : IN  std_logic_vector(0 to 3);
-         result : OUT  std_logic_vector;
-         carry : OUT  std_logic;
-         overflow : OUT  std_logic;
-         zero : OUT  std_logic
-        );
-    END COMPONENT;
-  
-
-   --Inputs
-   signal A : std_logic_vector(0 to 7) := (others => '0');
-   signal B : std_logic_vector(0 to 7) := (others => '0');
-   signal opcode : std_logic_vector(0 to 3) := (others => '0');
-
-     --Outputs
-   signal result : std_logic_vector(0 to 7);
-   signal carry : std_logic;
-   signal overflow : std_logic;
-   signal zero : std_logic;
- 
-BEGIN
- 
-    -- Instantiate the Unit Under Test (UUT)
-   uut: my_alu generic map(
-        NUMBITS => 8
-
-    )
-    PORT MAP (
-          A => A,
-          B => B,
-          opcode => opcode,
-          result => result,
-          carry => carry,
-          overflow => overflow,
-          zero => zero
-        );
-
-
-   -- Stimulus process
-   stim_proc: process
-   begin      
-      -- hold reset state for 100ms.
-        wait for 10 ns;
-      
-        -- --------------------------------------------------------------------------------
-        -- --------------------------------------------------------------------------------
-        -- Testing Unsigned Add
-        -- --------------------------------------------------------------------------------
-        -- --------------------------------------------------------------------------------
-        report "Testing Unsigned Add";
-        opcode <= "1000";
-      
-            -- Test 1
-            A <= conv_std_logic_vector(2, 8);
-            B <= conv_std_logic_vector(2, 8);
-          
-            wait for 10 ns;
-            assert result = conv_std_logic_vector(4, 8)     report "Test_1: result incorrect"     severity Warning;
---            assert carry = '0'                                 report "Test_1: carryout incorrect"    severity Warning;
---            assert overflow = '0'                                 report "Test_1: overflow incorrect"    severity Warning;
---            assert zero = '0'                                        report "Test_1: zero incorrect"        severity Warning;
-
-            -- Test 2
-            A <= conv_std_logic_vector(8, 8);
-            B <= conv_std_logic_vector(2, 8);
-          
-            wait for 10 ns;
-            assert result = conv_std_logic_vector(16, 8)     report "Test_2: result incorrect"     severity Warning;
---            assert carry = '0'                                 report "Test_1: carryout incorrect"    severity Warning;
---            assert overflow = '0'                                 report "Test_1: overflow incorrect"    severity Warning;
---            assert zero = '0'                                        report "Test_1: zero incorrect"        severity Warning;
-          
-       
-				
-        wait;
-   end process;
-
-END;

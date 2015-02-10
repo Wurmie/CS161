@@ -1,0 +1,447 @@
+/* William Lee <wlee030@ucr.edu>
+
+*  Luiz Lopez <yli066@ucr.edu>
+
+*
+
+*  Assignment: Lab 5 Part 3
+
+*  Lab: 021 Tuesday 8-11am
+
+*  Description: Extend the two SynchSMS from part 2 to add a speaker
+
+*
+
+* I acknowledge all content contained herein, excluding template or example
+
+* code, is my own original work.
+
+*/
+
+
+
+
+
+
+
+
+
+#include <avr/io.h>
+
+#include <avr/interrupt.h>
+
+
+
+// TimerISR() sets this to 1. C programmer should clear to 0.
+
+volatile unsigned char TimerFlag = 0;
+
+// Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
+
+unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
+
+unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
+
+void TimerOn() {
+
+	// AVR timer/counter controller register TCCR1
+
+	// bit3 = 0: CTC mode (clear timer on compare)
+
+	// bit2bit1bit0=011: pre-scaler /64
+
+	// 00001011: 0x0B
+
+	// SO, 8 MHz clock or 8,000,000 /64 = 125,000 ticks/s
+
+	// Thus, TCNT1 register will count at 125,000 ticks/s
+
+	TCCR1B = 0x0B;
+
+	// AVR output compare register OCR1A.
+
+	// Timer interrupt will be generated when TCNT1==OCR1A
+
+	// We want a 1 ms tick. 0.001 s * 125,000 ticks/s = 125
+
+	// So when TCNT1 register equals 125,
+
+	// 1 ms has passed. Thus, we compare to 125.
+
+	OCR1A = 125;// AVR timer interrupt mask register
+
+	// bit1: OCIE1A -- enables compare match interrupt
+
+	TIMSK1 = 0x02;
+
+	//Initialize avr counter
+
+	TCNT1=0;
+
+	// TimerISR will be called every _avr_timer_cntcurr milliseconds
+
+	_avr_timer_cntcurr = _avr_timer_M;
+
+	//Enable global interrupts: 0x80: 1000000
+
+	SREG |= 0x80;
+
+}
+
+void TimerOff() {
+
+	// bit3bit1bit0=000: timer off
+
+	TCCR1B = 0x00;
+
+}
+
+void TimerISR() {
+
+	TimerFlag = 1;
+
+}
+
+// In our approach, the C programmer does not touch this ISR, but rather TimerISR()
+
+ISR(TIMER1_COMPA_vect) {
+
+	// CPU automatically calls when TCNT1 == OCR1
+
+	// (every 1 ms per TimerOn settings)
+
+	// Count down to 0 rather than up to TOP (results in a more efficient comparison)
+
+	_avr_timer_cntcurr--;
+
+	if (_avr_timer_cntcurr == 0) {
+
+		// Call the ISR that the user uses
+
+		TimerISR();
+
+		_avr_timer_cntcurr = _avr_timer_M;
+
+	}
+
+}
+
+// Set TimerISR() to tick every M ms
+
+void TimerSet(unsigned long M) {
+
+	_avr_timer_M = M;
+
+	_avr_timer_cntcurr = _avr_timer_M;
+
+}
+
+
+
+enum States {Start1,LED_0,LED_1,LED_2} State;
+
+enum Blink_States {Start2,LED_3,Blink_LED_1} Blink_State;
+
+
+
+unsigned char threeLED = 0x00;
+
+unsigned char blinkingLED = 0x00;
+
+unsigned char speaker = 0x00;
+
+
+
+unsigned char button1;
+
+
+
+void ThreeLEDs() {
+
+	
+
+	switch (State) { //Transitions
+
+		case Start1:
+
+		State = LED_0;
+
+		break;
+
+		case LED_0:
+
+		State = LED_1;
+
+		break;
+
+		case LED_1:
+
+		State = LED_2;
+
+		break;
+
+		case LED_2:
+
+		State = LED_0;
+
+		break;
+
+		default:
+
+		PORTB = 0xFF;
+
+		break;
+
+	}	
+
+	switch (State) { //State actions, outputs
+
+		case LED_0:
+
+		threeLED = 0x01;
+
+		break;
+
+		case LED_1:
+
+		threeLED = 0x02;
+
+		break;
+
+		case LED_2:
+
+		threeLED = 0x04;
+
+		break;
+
+		default:
+
+		PORTB = 0xFF;
+
+		break;
+
+	}
+
+}
+
+
+
+void BlinkingLEDs()
+
+{
+
+	switch(Blink_State)
+
+	{
+
+		case Start2:
+
+		Blink_State = LED_3;
+
+		break;
+
+		case LED_3:
+
+		Blink_State = Blink_LED_1;
+
+		break;
+
+		case Blink_LED_1:
+
+		Blink_State = LED_3;
+
+		break;
+
+	}
+
+	switch(Blink_State)
+
+	{
+
+		case Start2:
+
+		break;
+
+		case LED_3:
+
+		blinkingLED = 0x08;
+
+		break;
+
+		case Blink_LED_1:
+
+		blinkingLED = 0x01;
+
+		break;
+
+	}
+
+}
+
+
+
+void CombineLEDs()
+
+{
+
+	PORTB = threeLED | blinkingLED | speaker;
+
+}
+
+
+
+enum speaker_states {speaker_on, speaker_off} speaker_state;
+
+unsigned char speakerTimer = 0;
+
+
+
+void Speaker()
+
+{
+
+	speakerTimer++;
+
+	switch(speaker_state)
+
+	{
+
+		case speaker_on:
+
+			if(speakerTimer<3)
+
+			{
+
+				speaker_state = speaker_on;
+
+			}
+
+			else
+
+			{
+
+				speaker_state = speaker_off;
+
+				if(speakerTimer==4)
+
+				{
+
+					speakerTimer = 0;
+
+				}
+
+			}			
+
+			break;
+
+		case speaker_off:
+
+			speaker_state = speaker_on;
+
+			break;
+
+	}
+
+	switch(speaker_state)
+
+	{
+
+		case speaker_on:
+
+			speaker = 0x10;
+
+			break;
+
+		case speaker_off:
+
+			speaker = 0x00;
+
+			break;
+
+	}
+
+	
+
+}
+
+
+
+unsigned short elapsedtime = 0; //time since start 0-1000. Starts over at 0 after 1000
+
+								//to prevent overflow
+
+
+
+int main(void)
+
+{
+
+	DDRA = 0x00; PORTA = 0xFF; //button input
+
+	DDRB = 0xFF; PORTB = 0x00; //LED
+
+
+
+	TimerSet(1);
+
+	TimerOn();
+
+	State = Start1; //ThreeLEDs
+
+	Blink_State = Start2; //BlinkingLEDs
+
+	
+
+	while (1) {
+
+		button1 = ~PINA & 0x01;
+
+		elapsedtime++;
+
+		if(button1) //speaker logic
+
+		{
+
+			Speaker();
+
+		}
+
+		if(elapsedtime%300 == 0) 
+
+		{
+
+			ThreeLEDs();
+
+		}
+
+		if(elapsedtime%1000 == 0)
+
+		{
+
+			BlinkingLEDs();
+
+		}
+
+		
+
+		CombineLEDs();
+
+		
+
+		if(elapsedtime == 1000) //in order to keep data type to short
+
+		{
+
+			elapsedtime = 0;
+
+		}
+
+		
+
+		while (!TimerFlag){}  // Wait for BL's period
+
+		TimerFlag = 0;        // Lower flag
+
+	}
+
+}

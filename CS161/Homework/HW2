@@ -1,0 +1,81 @@
+William S Lee
+861004948
+2.4.1) a. lw $s0,16($s7)
+add $s0,$s0,$s1
+add $s0,$s0,$s2
+b. lw $t0,16($s7)
+lw $s0,0($t0)
+sub $s0,$s1,$s0
+2.4.2) a. 3
+b. 3
+2.4.3) a. 4 registers
+b. 4 registers
+2.4.4) a. f += g+h+i+j;
+b. f=A[1]
+2.4.5) a) same
+b) same
+2.4.6) a. 5 as written, 5 minimally
+b. 2 as written, 2 minimally
+2.6.1) a. lw $s0,4($s7)
+sub $s0,$s0,$s1
+add $s0,$s0,$s2
+b. add $t0,$s7,$s1
+lw $t0,0($t0)
+add $t0,$t0,$s6
+lw $s0, 4($t0)
+2.6.2) a.3
+b.4
+2.6.3) a. 4
+b. 5
+2.6.4) a. f = 2i+h
+b. f = A[g­3]
+2.6.5) a. $s0 = 110
+$s0 = 300
+2.7.1) a. ­1391460350
+b. ­19629
+2.7.2) a. 2903506946
+b. 4294947667
+2.7.3) a. AD100002
+
+b. FFFFB353
+2.7.4) a.
+0111111111111111111111111111111111111111111
+b. 1111101000
+2.7.5) a. 7FFFFFFF
+b. 3E8
+2.7.6) a. 80000001
+b. FFFFFC18
+2.8.1) a. 7FFFFFFF/ no overflow
+b. 80000000/overflow
+2.8.2) a. 60000001/no overflow
+b. 0/no overflow
+2.8.3) a. EFFFFFFF/overflow
+b. C0000000/ overflow
+2.8.4) a. overflow
+b. no overflow
+2.8.5) a. no overflow
+b. no overflow
+2.8.6) a. overflow
+b. no overflow
+2.10.1) a. sw $t3,4($s0)
+b. lw $t0,64($t0)
+2.10.2) a. I­type
+b. I­type
+2.10.3) a. AE0B0004
+b. 8D080040
+2.10.4) a. 0x01004020
+b. 0x8E690004
+2.10.5) a. R­type
+b. I­type
+2.10.6) a. op=0x0, rd=0x8,rs=0x8, rt=0x0, funct = 0x0
+b. op=0x23, rs=0x13,rt=0x9,imm=0x4
+2.13.1) a. 0x57755778
+b. 0xFEFFFEDE
+2.13.2) a. 0x55555550
+b. 0xEADFEED0
+2.13.3) a. 0x0000AAAA
+b.0x0000BFCD
+2.13.4) a.0x00015B5A
+b. 0x00000000
+
+

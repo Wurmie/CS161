@@ -2,29 +2,16 @@
 
 *  Luiz Lopez <yli066@ucr.edu>
 
-*
-
 *  Assignment: Lab 5 Part 3
 
-*  Lab: 021 Tuesday 8-11am
+*  Lab: 022
 
-*  Description: Extend the two SynchSMS from part 2 to add a speaker
-
-*
 
 * I acknowledge all content contained herein, excluding template or example
 
 * code, is my own original work.
 
 */
-
-
-
-
-
-
-
-
 
 #include <avr/io.h>
 

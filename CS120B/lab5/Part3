@@ -21,7 +21,6 @@ volatile unsigned char TimerFlag = 0;
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
-
 void TimerOn() {
 	// AVR timer/counter controller register TCCR1
 	// bit3 = 0: CTC mode (clear timer on compare)
@@ -45,16 +44,13 @@ void TimerOn() {
 	//Enable global interrupts: 0x80: 1000000
 	SREG |= 0x80;
 }
-
 void TimerOff() {
 	// bit3bit1bit0=000: timer off
 	TCCR1B = 0x00;
 }
-
 void TimerISR() {
 	TimerFlag = 1;
 }
-
 // In our approach, the C programmer does not touch this ISR, but rather TimerISR()
 ISR(TIMER1_COMPA_vect) {
 	// CPU automatically calls when TCNT1 == OCR1
@@ -67,11 +63,10 @@ ISR(TIMER1_COMPA_vect) {
 		_avr_timer_cntcurr = _avr_timer_M;
 	}
 }
-
 // Set TimerISR() to tick every M ms
 void TimerSet(unsigned long M) {
 	_avr_timer_M = M;
-	_avr_timer_cntcurr = _avr_timer_M;
+	_avr_timer_cntcurr = _avr_timer_M;
 }
 
 enum States {Start1,LED_0,LED_1,LED_2} State;
@@ -86,34 +81,34 @@ unsigned char button1;
 void ThreeLEDs() {
 	switch (State) { //Transitions
 		case Start1:
-			State = LED_0;
-			break;
+		State = LED_0;
+		break;
 		case LED_0:
-			State = LED_1;
-			break;
+		State = LED_1;
+		break;
 		case LED_1:
-			State = LED_2;
-			break;
+		State = LED_2;
+		break;
 		case LED_2:
-			State = LED_0;
-			break;
+		State = LED_0;
+		break;
 		default:
-			PORTB = 0xFF;
-			break;
-	}	
+		PORTB = 0xFF;
+		break;
+	}
 	switch (State) { //State actions, outputs
 		case LED_0:
-			threeLED = 0x01;
-			break;
+		threeLED = 0x01;
+		break;
 		case LED_1:
-			threeLED = 0x02;
-			break;
+		threeLED = 0x02;
+		break;
 		case LED_2:
-			threeLED = 0x04;
-			break;
+		threeLED = 0x04;
+		break;
 		default:
-			PORTB = 0xFF;
-			break;
+		PORTB = 0xFF;
+		break;
 	}
 }
 
@@ -122,25 +117,25 @@ void BlinkingLEDs()
 	switch(Blink_State)
 	{
 		case Start2:
-			Blink_State = LED_3;
-			break;
+		Blink_State = LED_3;
+		break;
 		case LED_3:
-			Blink_State = Blink_LED_1;
-			break;
+		Blink_State = Blink_LED_1;
+		break;
 		case Blink_LED_1:
-			Blink_State = LED_3;
-			break;
+		Blink_State = LED_3;
+		break;
 	}
 	switch(Blink_State)
 	{
 		case Start2:
-			break;
+		break;
 		case LED_3:
-			blinkingLED = 0x08;
-			break;
+		blinkingLED = 0x08;
+		break;
 		case Blink_LED_1:
-			blinkingLED = 0x01;
-			break;
+		blinkingLED = 0x01;
+		break;
 	}
 }
 
@@ -158,28 +153,28 @@ void Speaker()
 	switch(speaker_state)
 	{
 		case speaker_on:
-			if(speakerTimer<3)
-				speaker_state = speaker_on;
-			else
-			{
-				speaker_state = speaker_off;
-				if(speakerTimer==4)
-					speakerTimer = 0;
-			}			
-			break;
+		if(speakerTimer<3)
+		speaker_state = speaker_on;
+		else
+		{
+			speaker_state = speaker_off;
+			if(speakerTimer==4)
+			speakerTimer = 0;
+		}
+		break;
 		case speaker_off:
-			speaker_state = speaker_on;
-			break;
+		speaker_state = speaker_on;
+		break;
 	}
 
 	switch(speaker_state)
 	{
 		case speaker_on:
-			speaker = 0x10;
-			break;
+		speaker = 0x10;
+		break;
 		case speaker_off:
-			speaker = 0x00;
-			break;
+		speaker = 0x00;
+		break;
 	}
 }
 
@@ -203,21 +198,21 @@ int main(void)
 		elapsedtime++;
 
 		if(button1) //speaker logic
-			Speaker();
+		Speaker();
 
 
-		if(elapsedtime%300 == 0) 
-			ThreeLEDs();
+		if(elapsedtime%300 == 0)
+		ThreeLEDs();
 
 		if(elapsedtime%1000 == 0)
-			BlinkingLEDs();
+		BlinkingLEDs();
 
 		CombineLEDs();
 
 		
 
 		if(elapsedtime == 1000) //in order to keep data type to short
-			elapsedtime = 0;
+		elapsedtime = 0;
 
 		while (!TimerFlag){}  // Wait for BL's period
 		TimerFlag = 0;        // Lower flag

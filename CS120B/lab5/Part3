@@ -69,112 +69,89 @@ void TimerSet(unsigned long M) {
 	_avr_timer_cntcurr = _avr_timer_M;
 }
 
-enum States {Start1,LED_0,LED_1,LED_2} State;
-enum Blink_States {Start2,LED_3,Blink_LED_1} Blink_State;
+enum states {Start,LED0,LED1,LED2} state;
+enum Blinkings {Start1,LED3,Blink1} Blinks;
 
-unsigned char threeLED = 0x00;
-unsigned char blinkingLED = 0x00;
+unsigned char LEDs = 0x00;
+unsigned char Blinkers= 0x00;
 unsigned char speaker = 0x00;
 
 unsigned char button1;
 
-void ThreeLEDs() {
-	switch (State) { //Transitions
-		case Start1:
-		State = LED_0;
-		break;
-		case LED_0:
-		State = LED_1;
-		break;
-		case LED_1:
-		State = LED_2;
-		break;
+void theLED() {
+	switch (state) { //Transitions
+		case Start:
+			state = LED0;
+			LEDs = 0x01;
+			break;
+		case LED0:
+			state = LED1;
+			LEDs = 0x02;
+			break;
+		case LED1:
+			state = LED2;
+			break;
 		case LED_2:
-		State = LED_0;
-		break;
+			state = LED0;
+			LEDs = 0x04;
+			break;
 		default:
-		PORTB = 0xFF;
-		break;
-	}
-	switch (State) { //State actions, outputs
-		case LED_0:
-		threeLED = 0x01;
-		break;
-		case LED_1:
-		threeLED = 0x02;
-		break;
-		case LED_2:
-		threeLED = 0x04;
-		break;
-		default:
-		PORTB = 0xFF;
-		break;
+			PORTB = 0xFF;
+			PORTB = 0xFF;
+			break;
 	}
 }
 
-void BlinkingLEDs()
+void theBlinkers()
 {
-	switch(Blink_State)
+	switch(Blinkings)
 	{
-		case Start2:
-		Blink_State = LED_3;
-		break;
-		case LED_3:
-		Blink_State = Blink_LED_1;
-		break;
+		case Start1:
+			Blinks = LED3;
+			break;
+		case LED3:
+			Blinkings = Blink_LED_1;
+			Blinkers = 0x08;
+			break;
 		case Blink_LED_1:
-		Blink_State = LED_3;
-		break;
-	}
-	switch(Blink_State)
-	{
-		case Start2:
-		break;
-		case LED_3:
-		blinkingLED = 0x08;
-		break;
-		case Blink_LED_1:
-		blinkingLED = 0x01;
-		break;
+			Blink_State = LED_3;
+			Blinkers = 0x01;
+			break;
+		default:
+			break;
 	}
 }
 
 void CombineLEDs()
 {
-	PORTB = threeLED | blinkingLED | speaker;
+	PORTB = LEDs | Blinkers | speaker;
 }
 
-enum speaker_states {speaker_on, speaker_off} speaker_state;
+enum SPEAKERS {ON,OFF} SPEAKERS;
 unsigned char speakerTimer = 0;
 
 void Speaker()
 {
 	speakerTimer++;
-	switch(speaker_state)
+	switch(SPEAKERS)
 	{
-		case speaker_on:
-		if(speakerTimer<3)
-		speaker_state = speaker_on;
+		case ON:
+			if(speakerTimer<3)
+				SPEAKERS = ON;
 		else
 		{
-			speaker_state = speaker_off;
+			SPEAKERS = speaker_off;
 			if(speakerTimer==4)
-			speakerTimer = 0;
+				speakerTimer = 0;
 		}
-		break;
-		case speaker_off:
-		speaker_state = speaker_on;
-		break;
-	}
-
-	switch(speaker_state)
-	{
-		case speaker_on:
 		speaker = 0x10;
 		break;
-		case speaker_off:
-		speaker = 0x00;
-		break;
+		case OFF:
+			SPEAKERS = ON;
+			speaker = 0x00;
+			break;
+		default:
+			break;
 	}
 }
 
@@ -188,34 +165,29 @@ int main(void)
 	
 	TimerSet(1);
 	TimerOn();
-	State = Start1; //ThreeLEDs
+	State = Start1; //LEDss
 	Blink_State = Start2; //BlinkingLEDs
 	
 	while (1) {
-
 		button1 = ~PINA & 0x01;
 
 		elapsedtime++;
 
 		if(button1) //speaker logic
-		Speaker();
-
-
+			Speaker();
+		
 		if(elapsedtime%300 == 0)
-		ThreeLEDs();
+			theLED();
 
 		if(elapsedtime%1000 == 0)
-		BlinkingLEDs();
+			theBlinkers();
 
 		CombineLEDs();
 
-		
-
 		if(elapsedtime == 1000) //in order to keep data type to short
-		elapsedtime = 0;
+			elapsedtime = 0;
 
 		while (!TimerFlag){}  // Wait for BL's period
 		TimerFlag = 0;        // Lower flag
 	}
-
 }

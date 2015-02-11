@@ -1,10 +1,11 @@
-/* William Lee
+/* William Lee <wlee030@ucr.edu>
 
-*  Luiz Lopez
+*  Luiz Lopez <yli066@ucr.edu>
 
-*  Assignment: Lab 5 Part 4
+*  Assignment: Lab 5 Part 3
 
-*  Lab: 22
+*  Lab: 022
+
 
 * I acknowledge all content contained herein, excluding template or example
 
@@ -13,19 +14,13 @@
 */
 
 #include <avr/io.h>
-
 #include <avr/interrupt.h>
 
 // TimerISR() sets this to 1. C programmer should clear to 0.
-
 volatile unsigned char TimerFlag = 0;
-
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
-
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
-
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
-
 void TimerOn() {
 	// AVR timer/counter controller register TCCR1
 	// bit3 = 0: CTC mode (clear timer on compare)
@@ -49,18 +44,14 @@ void TimerOn() {
 	//Enable global interrupts: 0x80: 1000000
 	SREG |= 0x80;
 }
-
 void TimerOff() {
 	// bit3bit1bit0=000: timer off
 	TCCR1B = 0x00;
 }
-
 void TimerISR() {
 	TimerFlag = 1;
 }
-
 // In our approach, the C programmer does not touch this ISR, but rather TimerISR()
-
 ISR(TIMER1_COMPA_vect) {
 	// CPU automatically calls when TCNT1 == OCR1
 	// (every 1 ms per TimerOn settings)
@@ -72,359 +63,163 @@ ISR(TIMER1_COMPA_vect) {
 		_avr_timer_cntcurr = _avr_timer_M;
 	}
 }
-
 // Set TimerISR() to tick every M ms
 void TimerSet(unsigned long M) {
 	_avr_timer_M = M;
 	_avr_timer_cntcurr = _avr_timer_M;
 }
 
-enum States {Start1,LED_0,LED_1,LED_2} State;
-enum Blink_States {Start2,LED_3,Blink_LED_1} Blink_State;
+enum states {Start,LED0,LED1,LED2} state;
+enum Blinkings {Start1,LED3,Blink1} Blinks;
 
-unsigned char threeLED = 0x00;
-unsigned char blinkingLED = 0x00;
+unsigned char LEDs = 0x00;
+unsigned char Blinkers= 0x00;
 unsigned char speaker = 0x00;
-unsigned char button1; //turn up frequency
-unsigned char button2; //turn down frequency
-unsigned char button3; //turn speaker on
 
-void ThreeLEDs() {
-	switch (State) { //Transitions
+unsigned char button1;
+
+void theLED() {
+	switch (state) { //Transitions
+		case Start:
+			state = LED0;
+			LEDs = 0x01;
+			break;
+		case LED0:
+			state = LED1;
+			LEDs = 0x02;
+			break;
+		case LED1:
+			state = LED2;
+			break;
+		case LED_2:
+			state = LED0;
+			LEDs = 0x04;
+			break;
+		default:
+			PORTB = 0xFF;
+			PORTB = 0xFF;
+			break;
+	}
+}
+
+void theBlinkers()
+{
+	switch(Blinkings)
+	{
 		case Start1:
-		State = LED_0;
-		break;
-		case LED_0:
-		State = LED_1;
-		break;
-		case LED_1:
-		State = LED_2;
-		break;
-		case LED_2:
-		State = LED_0;
-		break;
-		default:
-		PORTB = 0xFF;
-		break;
-	}	
-	switch (State) { //State actions, outputs
-		case LED_0:
-		threeLED = 0x01;
-		break;
-		case LED_1:
-		threeLED = 0x02;
-		break;
-		case LED_2:
-		threeLED = 0x04;
-		break;
-		default:
-		PORTB = 0xFF;
-		break;
-	}
-}
-
-void BlinkingLEDs()
-
-{
-
-	switch(Blink_State)
-
-	{
-
-		case Start2:
-
-		Blink_State = LED_3;
-
-		break;
-
-		case LED_3:
-
-		Blink_State = Blink_LED_1;
-
-		break;
-
+			Blinks = LED3;
+			break;
+		case LED3:
+			Blinkings = Blink_LED_1;
+			Blinkers = 0x08;
+			break;
 		case Blink_LED_1:
-
-		Blink_State = LED_3;
-
-		break;
-
+			Blink_State = LED_3;
+			Blinkers = 0x01;
+			break;
+		default:
+			break;
 	}
-
-	switch(Blink_State)
-
-	{
-
-		case Start2:
-
-		break;
-
-		case LED_3:
-
-		blinkingLED = 0x08;
-
-		break;
-
-		case Blink_LED_1:
-
-		blinkingLED = 0x01;
-
-		break;
-
-	}
-
 }
 
-
-
-void CombineSMs()
-
+void CombineLEDs()
 {
-
-	PORTB = threeLED | blinkingLED | speaker;
-
+	PORTB = LEDs | Blinkers | speaker;
 }
 
-
-
-enum speaker_states {speaker_on, speaker_off} speaker_state;
-
+enum SPEAKERS {ON,OFF} SPEAKERS;
 unsigned char speakerTimer = 0;
 
-unsigned char currFreq = 50; //a value >=1. speaker is on for currFreq milliseconds
-
-
-
 void Speaker()
-
 {
-
 	speakerTimer++;
-
-	switch(speaker_state)
-
+	switch(SPEAKERS)
 	{
-
-		case speaker_on:
-
-			if(speakerTimer<(currFreq+1))
-
-			{
-
-				speaker_state = speaker_on;
-
-			}
-
-			else
-
-			{
-
-				speaker_state = speaker_off;
-
-				if(speakerTimer==(currFreq+currFreq))
-
-				{
-
-					speakerTimer = 0;
-
-				}
-
-			}			
-
-			break;
-
-		case speaker_off:
-
-			speaker_state = speaker_on;
-
-			break;
-
-	}
-
-	switch(speaker_state)
-
-	{
-
-		case speaker_on:
-
-			speaker = 0x10;
-
-			break;
-
-		case speaker_off:
-
+		case ON:
+			if(speakerTimer<3)
+				SPEAKERS = ON;
+		else
+		{
+			SPEAKERS = speaker_off;
+			if(speakerTimer==4)
+				speakerTimer = 0;
+		}
+		speaker = 0x10;
+		break;
+		case OFF:
+			SPEAKERS = ON;
 			speaker = 0x00;
-
 			break;
-
+		default:
+			break;
 	}
-
-	
-
 }
 
-
-
-enum freq_states {freq_start,freq_up, freq_down, go_up, go_down} freq_state;
+enum FREQUENCIES {START,FUP, FDOWN, UP, DOWN} FREQUENCIES;
 
 void changeFrequency(unsigned char button1, unsigned char button2)
-
 {
-
-	if(!button1 && !button2 && (freq_state=freq_start))
-
+	if(!button1 && !button2 && (FREQUENCIES=START))
 		return;
-
-	
-
-	switch(freq_state)
-
+	switch(FREQUENCIES)
 	{
-
-		case freq_start:
-
+		case START:
 			if(button1)
-
-			{
-
-				freq_state = freq_up;
-
-			}
-
+				FREQUENCIES = FUP;
 			else if(button2)
-
-			{
-
-				freq_state = freq_down;
-
-			}
-
+				FREQUENCIES = FDOWN;
 			break;
-
-		case freq_up:
-
-			freq_state = go_up;
-
+		case FUP:
+			FREQUENCIES = UP;
 			break;
-
-		case go_up:
-
+		case UP:
 			if(currFreq <= 1)
-
 				currFreq = 1;
-
 			else
-
 				currFreq--;
-
-			freq_state = freq_start;
-
+			FREQUENCIES = START;
 			break;
-
-		case freq_down:
-
-			freq_state = go_down;
-
+		case FDOWN:
+			FREQUENCIES = DOWN;
 			break;
-
-		case go_down:
-
+		case DOWN:
 			currFreq++;
-
-			freq_state = freq_start;
-
+			FREQUENCIES = START;
 			break;
-
 	}
-
 }
-
-
-
-unsigned short elapsedtime = 0; //time since start 0-1000. Starts over at 0 after 1000
-
-								//to prevent overflow
+unsigned short elapsedtime = 0;
 
 int main(void)
-
 {
-
 	DDRA = 0x00; PORTA = 0xFF; //button input
-
 	DDRB = 0xFF; PORTB = 0x00; //LED
-
-
-
-	TimerSet(1);
-
-	TimerOn();
-
-	State = Start1; //ThreeLEDs
-
-	Blink_State = Start2; //BlinkingLEDs
-
-	speaker_state = speaker_off;
-
-	freq_state = freq_start;
-
 	
-
+	TimerSet(1);
+	TimerOn();
+	State = Start1; //LEDss
+	Blink_State = Start2; //BlinkingLEDs
+	
 	while (1) {
-
 		button1 = ~PINA & 0x01;
-
-		button2 = ~PINA & 0x02;
-
-		button3 = ~PINA & 0x04;
 
 		elapsedtime++;
 
-		changeFrequency(button1, button2);
-
-		if(button3) //speaker logic
-
-		{
-
+		if(button1) //speaker logic
 			Speaker();
-
-		}
-
-		if(elapsedtime%300 == 0) 
-
-		{
-
-			ThreeLEDs();
-
-		}
+		
+		if(elapsedtime%300 == 0)
+			theLED();
 
 		if(elapsedtime%1000 == 0)
+			theBlinkers();
 
-		{
-
-			BlinkingLEDs();
-
-		}
-
-		
-
-		CombineSMs();
-
-		
+		CombineLEDs();
 
 		if(elapsedtime == 1000) //in order to keep data type to short
-
-		{
-
 			elapsedtime = 0;
 
-		}
-
-		
-
 		while (!TimerFlag){}  // Wait for BL's period
-
 		TimerFlag = 0;        // Lower flag
-
 	}
-
 }

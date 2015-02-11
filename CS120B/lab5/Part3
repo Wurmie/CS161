@@ -86,34 +86,34 @@ unsigned char button1;
 void ThreeLEDs() {
 	switch (State) { //Transitions
 		case Start1:
-		State = LED_0;
-		break;
+			State = LED_0;
+			break;
 		case LED_0:
-		State = LED_1;
-		break;
+			State = LED_1;
+			break;
 		case LED_1:
-		State = LED_2;
-		break;
+			State = LED_2;
+			break;
 		case LED_2:
-		State = LED_0;
-		break;
+			State = LED_0;
+			break;
 		default:
-		PORTB = 0xFF;
-		break;
+			PORTB = 0xFF;
+			break;
 	}	
 	switch (State) { //State actions, outputs
 		case LED_0:
-		threeLED = 0x01;
-		break;
+			threeLED = 0x01;
+			break;
 		case LED_1:
-		threeLED = 0x02;
-		break;
+			threeLED = 0x02;
+			break;
 		case LED_2:
-		threeLED = 0x04;
-		break;
+			threeLED = 0x04;
+			break;
 		default:
-		PORTB = 0xFF;
-		break;
+			PORTB = 0xFF;
+			break;
 	}
 }
 
@@ -122,26 +122,25 @@ void BlinkingLEDs()
 	switch(Blink_State)
 	{
 		case Start2:
-
-		Blink_State = LED_3;
-		break;
+			Blink_State = LED_3;
+			break;
 		case LED_3:
-		Blink_State = Blink_LED_1;
-		break;
+			Blink_State = Blink_LED_1;
+			break;
 		case Blink_LED_1:
-		Blink_State = LED_3;
-		break;
+			Blink_State = LED_3;
+			break;
 	}
 	switch(Blink_State)
 	{
 		case Start2:
-		break;
+			break;
 		case LED_3:
-		blinkingLED = 0x08;
-		break;
+			blinkingLED = 0x08;
+			break;
 		case Blink_LED_1:
-		blinkingLED = 0x01;
-		break;
+			blinkingLED = 0x01;
+			break;
 	}
 }
 
@@ -160,16 +159,12 @@ void Speaker()
 	{
 		case speaker_on:
 			if(speakerTimer<3)
-			{
 				speaker_state = speaker_on;
-			}
 			else
 			{
 				speaker_state = speaker_off;
 				if(speakerTimer==4)
-				{
 					speakerTimer = 0;
-				}
 			}			
 			break;
 		case speaker_off:

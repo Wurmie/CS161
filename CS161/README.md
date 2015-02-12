@@ -6,10 +6,12 @@ Members:
          
 What it does:
 
-This lab should convert binary to BCD with unsigned add/subtract as well as signed add/subtract
+This lab will ask you two options: convert from fixed point to floating point or from floating point to a fixed number. You are asked 2 inputs. The first is which place the decimal should be placed left of and the second is the number to be converted. 
+
+How to use:
+
+When asked what you want to do, 1 would yield floating to fixed and 0 would yield fixed to floating. To input the numbers, you have to input the first number, ENTER, enter the second number, ENTER.
 
 Problems:
 
-The code is not dividing properly and the compiler is not accepting the new library to divide as well. We put the arith library and it gave us more errors. 
-
-Alot of the times, the code will not even compile as it says that it cannot be linked to compiler. Not sure how to fix unless we restart the computer.
+The code does not properly handle negatives as of now

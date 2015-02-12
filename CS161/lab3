@@ -1,0 +1,159 @@
+#William Lee wlee030
+#Viet Nguyen vngu072
+
+.text
+.globl main
+
+setup:
+	subu $sp, $sp, 32
+	sw $ra, 20($sp)
+	sw $fp, 16($sp)
+	addiu $fp, $sp, 28
+
+#lab3 part 2
+
+#have not handled zero or negative input
+.text
+
+main:
+    addi $t3, $zero, 0
+    addi $t4, $zero, 0
+    addi $t5, $zero, 0
+    addi $t8, $zero, 0
+    addi $a1, $zero, 0
+    la $a0,STR2
+    li $v0,4
+    syscall
+    li $v0, 5      # syscall 5 (read_int)
+       syscall           # reads an int into $v0
+    add $t5,$t5,$v0    #move to t5
+#check
+    bne $t8,$t5,L1
+#if 0, convert to floating point
+
+    la $a0,STR1
+    li $v0,4
+    syscall        #output string 1
+    
+        li $v0,5    #get first input
+        syscall
+        add $t0,$v0,$zero    #store that in temp register
+        add $t0,$t0,-1        #subtract 1
+    
+        li $v0,5
+        syscall
+	add $a0, $v0, $zero
+	bltzal $a0 negate
+	add $t1, $a0, $zero
+        mtc1 $t1,$f12
+        cvt.s.w $f12,$f12    #convert to float
+        
+       addi $t3,$t3,0        #starting point. from 0 to t4
+       addi $t4,$t4,2        #add 2 into temp4 and convert it to float
+        mtc1 $t4,$f14
+        cvt.s.w $f14,$f14
+    
+loop:
+    bgt $t3,$t0,exit    #loop from 0-t0
+    div.s $f12,$f12,$f14,    #divide by 2
+    addi $t3,$t3,1        #add 1 to t3
+    j loop            #loop
+    beq $a1, $zero, exit
+    
+exit:
+    bne $a1, $zero, negateFloat
+printFloat:
+    li $v0, 2      # syscall 2 (print_float)
+       syscall           # outputs the float at $f12
+    la $a0, newline
+    li $v0, 4
+    syscall #newline
+    j main
+
+#else 1 then float to fixed point
+L1:
+    la $a0,STR0
+    li $v0,4
+    syscall
+    
+    li $v0,5        #get first input
+    syscall
+    add $t0,$v0,$zero    #store in temp
+    
+    li $v0,6        #get second input as a float in $f0
+    syscall
+    
+    mfc1 $t1, $f0
+    lw $t3, floatNegateMask
+    and $t3, $t3, $t1
+    lw $t4, floatFactionMask
+    and $t4, $t4, $t1
+    lw $t5, floatFactionExtend
+    or $t4, $t4, $t5
+    lw $t5, floatExMask
+    and $t5, $t5, $t1
+    srl $t5, $t5, 23
+    addi $t5, $t5, -127 #Normalise the exp
+    lw $t6, floatPointLocDefault
+    sub $t5, $t6, $t5
+    sub $t0, $t5, $t0 # MovePointLoc = PointLoc - input
+    bltz $t0, shiftLeft
+shiftRight:
+    beq $t0, $zero, exit1
+    srl $t4, $t4, 1
+    addi $t0, $t0, -1
+    j shiftRight
+shiftLeft:
+    beq $t0, $zero, exit1
+    sll $t4, $t4, 1
+    addi $t0, $t0, +1
+    j shiftLeft
+    
+exit1:                
+    beq $t3, $zero, printFixed
+    add $a0, $t4, $zero
+    jal negate
+    add $t4, $v0, $zero
+    #or $t4, $t4, $t3
+printFixed:
+    addi $a0, $t4, 0
+    li $v0,1
+    syscall
+    la $a0, newline
+    li $v0, 4
+    syscall
+       j main
+ 
+negate: #make sure to reset the flag before calling this
+    addi $t7, $zero, -1
+    xor $v0, $a0, $t7
+    addi $v0, $v0, 1
+    addi $v1, $zero, 1 #negate was used flag
+    jr $ra
+     
+negateFloat: #does not set flag. Make sure flag is empty before calling. not yet modular
+   addi $t0, $zero, -1
+   mtc1 $t0, $f14
+   cvt.s.w $f14,$f14
+   mul.s $f12, $f12, $f14
+   j printFloat
+    
+.data
+floatNegateMask:
+    .word 0x80000000
+floatFactionMask:
+    .word 0x007FFFFF
+floatFactionExtend:
+    .word 0x00800000
+floatExMask:
+    .word 0x7F800000
+floatPointLocDefault:
+    .word 0x17
+STR0:
+    .asciiz "Enter 2 decimals to convert to fixed:\n"
+STR1:
+    .asciiz "Enter 2 decimals to convert to float:\n"
+STR2:
+    .asciiz "What would you like to do?\n"
+newline:
+    .asciiz "\n"

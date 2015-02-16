@@ -1,0 +1,93 @@
+4.1.4)  a. 400 + 30 + 200 + 30 + 120 +350 + 30 = 1160
+	b. 500 + 100 + 220 + 100 + 180 + 1000 + 100 = 2200
+4.1.5)  a. 400 + 200 + 30 + 120 +30 + 350 + 30 = 1160
+	b. 500 + 220 + 100 + 180 + 100 + 1000 + 100 = 2200
+4.1.6)  a. 400 + 200 + 30 + 120 +30 + 30 = 810
+	b. 500 + 220 + 100 + 180 + 100 + 100 = 1200
+4.2.4)  a. (ALU latency + 300)400+200+30+120+350+30 + 300 = 1430 ps
+	b. (Control Latency+100) no change in critical path. 1130ps
+4.2.5)  a. 1000 instructions at 1130ps = runtime of 1130000ps. With improvement, we have 950 instructions at 1430ps = runtime of 1358500. Performance decrease of 225800ps
+	b. change does not affect cycle time. No speedup.
+4.2.6)  Cost/Performance = Cost / (1/Execution Time) 
+	a. Cost = 3890+ 600 = 4490. 
+	   Execution Time = 1000000*.95*1430 = 1358500000ps
+	  = 4490 / 1/1358500000 = 6.1
+	b. Cost = 3890 - 400 = 3490
+	 Execution Time = 1000000*1130 = 1130000000ps
+	= 3490 / 1/ 1130000000 = 3.94
+4.10.4) a. 1160 + 40 = 1200ps
+	b. 2200 + 80 = 2280ps
+4.10.5) a. 60 / 5 = $12
+	b. 115/5 = $23
+4.10.6) a.
+	b. 
+4.12.1)  a. In a non pipelined processor, has to allow instructions to go through all stages.
+		300 + 400 + 350 + 500 + 100 = 1650ps
+	 Pipelined processor reduces the time to the longest of the instructions plus a bit more to 	
+	accommidate the register at the end of the stage
+		500 + 20 = 520ps
+	
+	b. 200 + 150 + 120 + 190 + 140 = 800ps
+	 200 + 20 = 220ps
+4.12.2) a. LW uses all 5 stages. 
+	Non Pipelined = 300 + 400 + 350 + 500 + 100 = 1650ps
+	Pipelined = takes 5 cycles at 500ps per cycle = 2500ps
+
+	b. Non Pipelined = 200 + 150 + 120 + 190 + 140 = 800ps
+	    Pipelined = 5 cycles at 200 each = 1000ps
+4.12.3) a. MEM = 400+20 = 420ps
+	b. IF = 190 + 20 = 210ps
+4.13.1) a. on $6 between the sw and the add, and on $1 between the sw and the lw
+	b. on $5 between lw and add. $5 between sw and lw
+4.13.2) a. lw $1, 40($6)
+    add $6, $2,$2
+    nop
+  nop
+  sw $6,50($1)
+
+Delay I3 to avoid RAW hazard on #1 from I1
+Delay I3 to avoid RAW hazard on $6 from I2
+	b. lw $5,-16($5)
+	   nop
+	   nop
+	  $sw $5,-16($5)
+	  $add $5,$5,$5
+	  Delay I2 to avoid RAW hazard on $5 from I1
+4.13.3) a. No RAW hazard on $1 from I1 forwarded
+	b. lw $5,-16($5)
+	    nop
+	    $sw $5,-16($5)
+	    $add $5,$5,$5
+	   Delay l2 to avoid RAW hazard on $5 from l1
+	   Value for $5 is forwarded from I2
+4.13.4) a. Full forwarding takes 3 cycles
+	No forwarding: 5 cycles
+	Speed:  (5*300)/(3*400)=1.25 
+	b. Full forwarding takes 4 cycles
+	No forwarding: 5 cycles
+	Speed:  5*200 / 4*250 = 1
+4.13.5) a. lw $1, 40($6)
+	add $6, $2,$2
+	sw $6,10($3)
+	b. lw $5,-16($5)
+	nop
+	nop
+	sw $5,-16($5)
+	add $5,$5,$5
+4.13.6) a. Total execution time = 360 * 3 = 1080ps
+	Speed up: 1500/1080 = 1.39
+	b. Total execution time = 220*5 = 1100ps
+	Speed up: 1000/1100 = 0.91
+4.14.1) a. It takes 9 cycles. Cannot add nops since it needs to be fetched
+	b. 12 cycles. Still cannot add nops
+4.14.2) a. Saves one cycle in an entire execution without data hazards.
+	Instructions executed: 4. 8/7 = 1.14 speed up
+	b. instructions: 5. 9/8 = 1.13 speed up
+4.14.3) a. instructions executed: 4. Branches:1. Cycles with EXE: 4+4+1x2 = 10. W/ ID: 4+4+1x1=9. speedup = 10/9 = 1.11
+	b. instructions:5. branches:1. w/ EXE = 4+5+1x2=11. w/ ID = 4+5+1x1=10. 11/10 = 1.10
+4.14.4) a. Cycle Time w/ 5: 130ps. Cycle Time w/ 4: 150ps. Speed up = (8x130)/(7x150) = 0.99
+	b. Cycle Time w/ 5: 220ps. Cycle Time w/ 4: 240ps. Speed up = (9x220)/(8x240) = 1.03
+4.14.5) a. New ID latency: 180ps. New EX latency: 80ps. New cycle time:180ps. old cycle time:130ps. Speedup = (10x130)/(9x180) = 0.8
+	b. New ID latency: 150ps. New EX latency:160ps. New cycle time: 220ps. Old cycle time: 220ps. Speedup = (11x220)/(10/220) = 1.10
+4.14.6) a. Cycles: 10. Execution time = 10x130 = 1300ps. Cycles with branch in MEM: 4+4+1x3 = 11. Execution time: 11x130ps = 1430ps. Speedup = 0.91
+	b. Cycles: 11. Execution time = 11x220 = 2420ps. Cycles with branch in MEM: 4+5+1x3 = 12. Execution time: 12x220 = 2640ps. Speedup = 0.92

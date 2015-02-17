@@ -1,9 +1,10 @@
 /*
- * wlee030_lab6_part1.c
+ * wlee030_lab6_part3.c
  *
- * Created: 2/15/2015 5:56:17 PM
+ * Created: 2/16/2015 8:19:25 PM
  *  Author: wurmie
  */
+ 
  
 #include <avr/io.h>
  
@@ -24,16 +25,24 @@ int main(void)
  
     ADC_init();
  
-    unsigned short copy;    // copy of ADC
-    unsigned char toChar;      // convert ADC to char
-    unsigned char temp;          // shift ADC
+    unsigned short copy = 0x00;     // copy of ADC
+    unsigned char toChar = 0x00;       // convert ADC to char
+    unsigned char temp = 0x00;           // shift ADC
+     
+    unsigned short MAX = 0x3FF;
  
     while(1)
     {
         copy = ADC;
-        toChar = (char)ADC;
+        if(copy > (MAX / 2))
+        {
+            toChar = 0x00;
+        }
+        else
+        {
+            toChar = 0x01;
+        }
         PORTB = toChar;
-        temp = (char)(copy >> 8);
         PORTD = temp;
     }
 }

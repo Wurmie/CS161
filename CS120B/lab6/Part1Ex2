@@ -1,9 +1,10 @@
 /*
- * wlee030_lab6_part1.c
+ * wlee030_lab6_part2.c
  *
- * Created: 2/15/2015 5:56:17 PM
+ * Created: 5/16/2015 7:45:26 PM
  *  Author: wurmie
  */
+ 
  
 #include <avr/io.h>
  
@@ -32,8 +33,8 @@ int main(void)
     {
         copy = ADC;
         toChar = (char)ADC;
-        PORTB = toChar;
+        PORTB = ~toChar;
         temp = (char)(copy >> 8);
-        PORTD = temp;
+        PORTD = ~temp;
     }
 }

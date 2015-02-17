@@ -1,0 +1,82 @@
+/*
+ * wlee030_lab6_part4.c
+ *
+ * Created: 2/16/2015 8:29:05 PM
+ *  Author: wurmie
+ */
+ 
+#include <avr/io.h>
+ 
+void ADC_init() {
+    ADCSRA |= (1 << ADEN) | (1 << ADSC) | (1 << ADATE);
+    // ADEN: setting this bit enables analog-to-digital conversion.
+    // ADSC: setting this bit starts the first conversion.
+    // ADATE: setting this bit enables auto-triggering. Since we are
+    //        in Free Running Mode, a new conversion will trigger whenever
+    //        the previous conversion completes.
+}
+ 
+int main(void)
+{
+    DDRA = 0x00; PORTA = 0xFF; // input A
+    DDRB = 0xFF; PORTB = 0x00; // output B
+    DDRD = 0xFF; PORTD = 0x00; // output D
+ 
+    ADC_init();
+ 
+    unsigned short adc_copy = 0x00;     // copy of ADC
+    unsigned char adc_char  = 0x00;     // convert ADC to char
+    unsigned char tmp       = 0x00;     // shift ADC
+ 
+    unsigned short MAX = 0x3FF;
+    unsigned short MAX_LIGHT1   =  MAX*14/16;
+    unsigned short MAX_LIGHT2   = MAX*13/16;
+    unsigned short MAX_LIGHT3   = MAX*12/16;
+    unsigned short MAX_LIGHT4   = MAX*11/16;
+    unsigned short MAX_LIGHT5   = MAX*10/16;
+    unsigned short MAX_LIGHT6   = MAX*9/16;
+    unsigned short MAX_LIGHT7   = MAX*8/16;
+    unsigned short MAX_LIGHT8   = MAX*7/16;
+     
+    while(1)
+    {
+        adc_copy = ADC;
+        if((adc_copy <= MAX_LIGHT8))
+        {
+            adc_char = 0xFF;
+        }
+        if(((adc_copy > MAX_LIGHT8) && (adc_copy <= MAX_LIGHT7)))
+        {
+            adc_char = 0x7F;
+        }
+        if(((adc_copy > MAX_LIGHT7) && (adc_copy <= MAX_LIGHT6)))
+        {
+            adc_char = 0x3F;
+        }
+        if(((adc_copy > MAX_LIGHT6) && (adc_copy <= MAX_LIGHT5)))
+        {
+            adc_char = 0x1F;
+        }
+        if(((adc_copy > MAX_LIGHT5) && (adc_copy <= MAX_LIGHT4)))
+        {
+            adc_char = 0x0F;
+        }
+        if(((adc_copy > MAX_LIGHT4) && (adc_copy <= MAX_LIGHT3)))
+        {
+            adc_char = 0x07;
+        }
+        if(((adc_copy > MAX_LIGHT3) && (adc_copy <= MAX_LIGHT2)))
+        {
+            adc_char = 0x03;
+        }
+        if(((adc_copy > MAX_LIGHT2) && (adc_copy <= MAX_LIGHT1)))
+        {
+            adc_char = 0x01;
+        }
+        //==========================================================================
+ 
+        PORTB = adc_char;
+        adc_char = 0x00;
+        PORTD = tmp;
+    }
+}

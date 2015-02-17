@@ -25,7 +25,7 @@ int main(void)
     ADC_init();
  
     unsigned short copy = 0x00;     // copy of ADC
-    unsigned char adc_char = 0x00;     // convert ADC to char
+    unsigned char adc = 0x00;     // convert ADC to char
     unsigned char tmp = 0x00;     // shift ADC
  
     unsigned short MAX = 0x3FF;
@@ -41,41 +41,43 @@ int main(void)
     while(1)
     {
         copy = ADC;
-        if((copy <= MAX_LIGHT8))
+        adc = 0x00;
+
+        if((copy <= LIGHT8))
         {
-            adc_char = 0xFF;
+            adc = 0xFF;
         }
-        if(((adc_copy > MAX_LIGHT8) && (adc_copy <= MAX_LIGHT7)))
+        if(((copy > LIGHT8) && (copy <= LIGHT7)))
         {
-            adc_char = 0x7F;
+            adc = 0x7F;
         }
-        if(((adc_copy > MAX_LIGHT7) && (adc_copy <= MAX_LIGHT6)))
+        if(((copy > LIGHT7) && (copy <= LIGHT6)))
         {
-            adc_char = 0x3F;
+            adc = 0x3F;
         }
-        if(((adc_copy > MAX_LIGHT6) && (adc_copy <= MAX_LIGHT5)))
+        if(((copy > LIGHT6) && (copy <= LIGHT5)))
         {
-            adc_char = 0x1F;
+            adc = 0x1F;
         }
-        if(((adc_copy > MAX_LIGHT5) && (adc_copy <= MAX_LIGHT4)))
+        if(((copy > LIGHT5) && (copy <= LIGHT4)))
         {
-            adc_char = 0x0F;
+            adc = 0x0F;
         }
-        if(((adc_copy > MAX_LIGHT4) && (adc_copy <= MAX_LIGHT3)))
+        if(((copy > LIGHT4) && (copy <= LIGHT3)))
         {
-            adc_char = 0x07;
+            adc = 0x07;
         }
-        if(((adc_copy > MAX_LIGHT3) && (adc_copy <= MAX_LIGHT2)))
+        if(((copy > LIGHT3) && (copy <= LIGHT2)))
         {
-            adc_char = 0x03;
+            adc = 0x03;
         }
-        if(((adc_copy > MAX_LIGHT2) && (adc_copy <= MAX_LIGHT1)))
+        if(((copy > LIGHT2) && (copy <= LIGHT1)))
         {
-            adc_char = 0x01;
+            adc = 0x01;
         }
  
-        PORTB = adc_char;
-        adc_char = 0x00;
+        PORTB = adc;
+       
         PORTD = tmp;
     }
 }

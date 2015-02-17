@@ -16,7 +16,12 @@ void ADC_init() {
     //        in Free Running Mode, a new conversion will trigger whenever
     //        the previous conversion completes.
 }
- 
+
+unsigned short copy = 0x00;     // copy of ADC
+unsigned char toChar = 0x00;       // convert ADC to char
+unsigned char temp = 0x00;           // shift ADC
+     
+ unsigned short MAX = 0x3FF;
 int main(void)
 {
     DDRA = 0x00; PORTA = 0xFF; // input A
@@ -25,23 +30,13 @@ int main(void)
  
     ADC_init();
  
-    unsigned short copy = 0x00;     // copy of ADC
-    unsigned char toChar = 0x00;       // convert ADC to char
-    unsigned char temp = 0x00;           // shift ADC
-     
-    unsigned short MAX = 0x3FF;
- 
     while(1)
     {
         copy = ADC;
         if(copy > (MAX / 2))
-        {
             toChar = 0x00;
-        }
         else
-        {
             toChar = 0x01;
-        }
         PORTB = toChar;
         PORTD = temp;
     }

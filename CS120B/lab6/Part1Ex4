@@ -15,7 +15,21 @@ void ADC_init() {
     //        in Free Running Mode, a new conversion will trigger whenever
     //        the previous conversion completes.
 }
+
+unsigned short copy = 0x00;     // copy of ADC
+unsigned char adc = 0x00;     // convert ADC to char
+    unsigned char tmp = 0x00;     // shift ADC
  
+unsigned short MAX = 0x3FF;
+unsigned short LIGHT1 = MAX*14/16;
+unsigned short LIGHT2 = MAX*13/16;
+unsigned short LIGHT3 = MAX*12/16;
+unsigned short LIGHT4 = MAX*11/16;
+unsigned short LIGHT5 = MAX*10/16;
+unsigned short LIGHT6 = MAX*9/16;
+unsigned short LIGHT7 = MAX*8/16;
+unsigned short LIGHT8 = MAX*7/16;
+
 int main(void)
 {
     DDRA = 0x00; PORTA = 0xFF; // input A
@@ -23,20 +37,6 @@ int main(void)
     DDRD = 0xFF; PORTD = 0x00; // output D
  
     ADC_init();
- 
-    unsigned short copy = 0x00;     // copy of ADC
-    unsigned char adc = 0x00;     // convert ADC to char
-    unsigned char tmp = 0x00;     // shift ADC
- 
-    unsigned short MAX = 0x3FF;
-    unsigned short LIGHT1 = MAX*14/16;
-    unsigned short LIGHT2 = MAX*13/16;
-    unsigned short LIGHT3 = MAX*12/16;
-    unsigned short LIGHT4 = MAX*11/16;
-    unsigned short LIGHT5 = MAX*10/16;
-    unsigned short LIGHT6 = MAX*9/16;
-    unsigned short LIGHT7 = MAX*8/16;
-    unsigned short LIGHT8 = MAX*7/16;
      
     while(1)
     {
@@ -44,40 +44,23 @@ int main(void)
         adc = 0x00;
 
         if((copy <= LIGHT8))
-        {
             adc = 0xFF;
-        }
         if(((copy > LIGHT8) && (copy <= LIGHT7)))
-        {
             adc = 0x7F;
-        }
         if(((copy > LIGHT7) && (copy <= LIGHT6)))
-        {
             adc = 0x3F;
-        }
         if(((copy > LIGHT6) && (copy <= LIGHT5)))
-        {
             adc = 0x1F;
-        }
         if(((copy > LIGHT5) && (copy <= LIGHT4)))
-        {
             adc = 0x0F;
-        }
         if(((copy > LIGHT4) && (copy <= LIGHT3)))
-        {
             adc = 0x07;
-        }
         if(((copy > LIGHT3) && (copy <= LIGHT2)))
-        {
             adc = 0x03;
-        }
         if(((copy > LIGHT2) && (copy <= LIGHT1)))
-        {
             adc = 0x01;
-        }
  
         PORTB = adc;
-       
         PORTD = tmp;
     }
 }

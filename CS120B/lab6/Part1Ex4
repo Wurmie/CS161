@@ -18,7 +18,7 @@ void ADC_init() {
 
 unsigned short copy = 0x00;     // copy of ADC
 unsigned char adc = 0x00;     // convert ADC to char
-    unsigned char tmp = 0x00;     // shift ADC
+unsigned char tmp = 0x00;     // shift ADC
  
 unsigned short MAX = 0x3FF;
 unsigned short LIGHT1 = MAX*14/16;

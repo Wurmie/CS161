@@ -16,26 +16,26 @@ void ADC_init() {
     //        the previous conversion completes.
 }
 
-unsigned short copy = 0x00;     // copy of ADC
-unsigned char adc = 0x00;     // convert ADC to char
-unsigned char tmp = 0x00;     // shift ADC
- 
-unsigned short MAX = 0x3FF;
-unsigned short LIGHT1 = MAX*14/16;
-unsigned short LIGHT2 = MAX*13/16;
-unsigned short LIGHT3 = MAX*12/16;
-unsigned short LIGHT4 = MAX*11/16;
-unsigned short LIGHT5 = MAX*10/16;
-unsigned short LIGHT6 = MAX*9/16;
-unsigned short LIGHT7 = MAX*8/16;
-unsigned short LIGHT8 = MAX*7/16;
-
 int main(void)
 {
     DDRA = 0x00; PORTA = 0xFF; // input A
     DDRB = 0xFF; PORTB = 0x00; // output B
     DDRD = 0xFF; PORTD = 0x00; // output D
+    
+   unsigned short copy = 0x00;     // copy of ADC
+   unsigned char adc = 0x00;     // convert ADC to char
+   unsigned char tmp = 0x00;     // shift ADC
  
+   unsigned short MAX = 0x3FF;
+   unsigned short LIGHT1 = MAX*14/16;
+   unsigned short LIGHT2 = MAX*13/16;
+   unsigned short LIGHT3 = MAX*12/16;
+   unsigned short LIGHT4 = MAX*11/16;
+   unsigned short LIGHT5 = MAX*10/16;
+   unsigned short LIGHT6 = MAX*9/16;
+   unsigned short LIGHT7 = MAX*8/16;
+   unsigned short LIGHT8 = MAX*7/16;
+
     ADC_init();
      
     while(1)

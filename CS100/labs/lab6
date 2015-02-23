@@ -1,0 +1,58 @@
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <string>
+#include <ctime>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <signal.h>
+#include <sys/types.h>
+
+int Ccount = 0;
+int Zcount = 0;
+int Bcount = 0;
+
+void handler(int i)
+{
+        if(i == SIGINT)
+        {
+                std::cout << "C\n" << std::flush;
+                Ccount++;
+        }
+        else if(i == SIGQUIT)
+        {
+                std::cout << "\\ \n" << std::flush;
+                Zcount++;
+        }
+        else if(i == SIGTSTP)
+        {
+                std::cout << "S\n" << std::flush;
+                Bcount++;
+                //signal(SIGTSTP,SIG_DFL);
+                raise(SIGSTOP);
+                //signal(SIGTSTP,handler);
+        }
+}
+
+int main()
+{
+        signal(SIGINT,handler);
+        signal(SIGQUIT,handler);
+        signal(SIGTSTP,handler);
+
+        while(1)
+        {
+                if(Bcount == 3)
+                {
+                        std::cout << "C: " << Ccount << "\n" << std::flush;
+                        std::cout << "\\: " << Zcount << "\n" << std::flush;
+                        std::cout << "Z: " << Bcount << "\n" << std::flush;
+                        exit(1);
+                }
+                std::cout << "X\n" << std::flush;
+                sleep(1);
+        }
+        return 0;
+}
+~             

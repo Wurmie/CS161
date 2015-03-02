@@ -1,0 +1,63 @@
+S(const_cast<char*>(filenames[i].c_str()));
+ 61                         rmdir(filenames[i].c_str());
+ 62                 }
+ 63         }
+ 64 }
+ 65 int main()
+ 66 {
+ 67         //parsing commands
+ 68         string input;
+ 69         getline(std::cin,input);
+ 70         vector<char*> commands;
+ 71         if(input.size() != 0)
+ 72         {
+ 73                 char *tok = strtok(const_cast<char*>(input.c_str())," ");
+ 74                 while(tok != NULL)
+ 75                 {
+ 76                         commands.push_back(tok);
+ 77                         tok = strtok(NULL," ");
+ 78                 }
+ 79         }
+ 80         struct stat file;
+ 81 
+ 82         string convtStr;
+ 83         convtStr = commands.at(0);
+ 84         if(convtStr.compare("rm") == 0)
+ 85         {
+ 86                 convtStr = commands.at(1);
+ 87                 //has a flag
+ 88                 if(convtStr.compare("-r") == 0)
+ 89                 {
+ 90                         for(int i = 2;i < commands.size();i++)
+ 91                         {
+ 92                                 if(unlink(commands.at(i)))
+ 93                                 {
+ 94                                         if(stat(commands.at(i),&file) != 0)
+ 95                                                 perror("error");
+ 96                                         //check if directory
+ 97                                         if(S_ISDIR(file.st_mode))
+ 98                                                 deleteFOLDERS(commands.at(i));
+ 99                                         else
+100                                         {
+101                                                 if(unlink(commands.at(i)))
+102                                                 {
+103                                                         cout << "LOL again";
+104                                                 }
+105                                         }
+106                                 }
+107                         }
+108                 }
+109                 //does not have flag
+110                 else
+111                 {
+112                         for(int i = 1;i < commands.size();i++)
+113                         {
+114                                 if(unlink(commands.at(i)))
+115                                 {
+116                                         cout << "lol";
+117                                 }       
+118                         }
+119                 }
+120         }
+121         return 0;
+122 }
